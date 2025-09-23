@@ -11,4 +11,9 @@ export default [
       "textures/environmentMap/nz.jpg",
     ],
   },
+  {
+    name: "waveGeneratorsModel",
+    type: "gltfModel",
+    path: "models/waveGenerators.glb",
+  },
 ];
