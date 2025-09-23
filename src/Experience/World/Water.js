@@ -10,13 +10,22 @@ export default class Water {
     this.scene = this.experience.scene;
     this.world = this.experience.world;
     this.time = this.experience.time;
+    this.canvas = this.experience.canvas;
+    this.drag = this.experience.camera.drag;
 
     // Resource
     this.resource = this.resources.items.waveGeneratorsModel;
 
+    // Parameters
+    this.switch1IsOn = false;
+    this.switch2IsOn = true;
+    this.timeAtLastClick1 = -14;
+    this.timeAtLastClick2 = -14;
+
     this.setSurface();
     this.setBall1();
     this.setBall2();
+    this.setEvent();
 
     // axes helper (for dev purpose)
     // this.axis = new THREE.AxesHelper(10);
@@ -31,6 +40,10 @@ export default class Water {
       wireframe: true,
       uniforms: {
         uTime: { value: 0 },
+        uSwitch1IsON: { value: false },
+        uSwitch2IsON: { value: true },
+        uTimeAtLastClick1: { value: this.timeAtLastClick1 },
+        uTimeAtLastClick2: { value: this.timeAtLastClick2 },
       },
     });
     this.surfaceModel = new THREE.Mesh(this.surfaceGeo, this.surfaceMat);
@@ -75,16 +88,49 @@ export default class Water {
     this.scene.add(this.switch2Model);
   }
 
+  setEvent() {
+    this.canvas.addEventListener("click", () => {
+      if (this.drag.raycaster.intersectObject(this.switch1Model).length != 0) {
+        if (this.time.elapsed - this.timeAtLastClick1 < 6.8) {
+          return;
+        }
+        this.switch1IsOn = !this.switch1IsOn;
+        this.surfaceMat.uniforms.uSwitch1IsON.value = this.switch1IsOn;
+        this.timeAtLastClick1 = this.time.elapsed;
+        this.surfaceMat.uniforms.uTimeAtLastClick1.value = this.time.elapsed;
+      }
+      if (this.drag.raycaster.intersectObject(this.switch2Model).length != 0) {
+        if (this.time.elapsed - this.timeAtLastClick2 < 6.8) {
+          return;
+        }
+        this.switch2IsOn = !this.switch2IsOn;
+        this.surfaceMat.uniforms.uSwitch2IsON.value = this.switch2IsOn;
+        this.timeAtLastClick2 = this.time.elapsed;
+        this.surfaceMat.uniforms.uTimeAtLastClick2.value = this.time.elapsed;
+      }
+    });
+  }
+
   update() {
     // water surface
     this.surfaceMat.uniforms.uTime.value = this.time.elapsed;
 
     // ball 1
-    this.ball1Model.position.y =
-      -0.05 * Math.sin(2 * Math.PI * 1.2 * (this.time.elapsed - 0.16));
+    if (this.switch1IsOn) {
+      this.switch1Model.rotation.x = (15 * Math.PI) / 180;
+      this.ball1Model.position.y =
+        -0.05 * Math.sin(2 * Math.PI * 2.0 * (this.time.elapsed - 0.16));
+    } else {
+      this.switch1Model.rotation.x = -(15 * Math.PI) / 180;
+    }
 
     // ball 2
-    this.ball2Model.position.y =
-      -0.05 * Math.sin(2 * Math.PI * 1.2 * (this.time.elapsed - 0.16));
+    if (this.switch2IsOn) {
+      this.switch2Model.rotation.x = (15 * Math.PI) / 180;
+      this.ball2Model.position.y =
+        -0.05 * Math.sin(2 * Math.PI * 2.0 * (this.time.elapsed - 0.16));
+    } else {
+      this.switch2Model.rotation.x = -(15 * Math.PI) / 180;
+    }
   }
 }
