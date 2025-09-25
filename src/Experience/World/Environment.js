@@ -8,6 +8,7 @@ export default class Environment {
     this.resources = this.experience.resources;
 
     this.setEnvironmentMap();
+    this.setAmbient();
   }
 
   setEnvironmentMap() {
@@ -31,5 +32,10 @@ export default class Environment {
       });
     };
     this.environmentMap.updateMaterials();
+  }
+
+  setAmbient() {
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 1.6);
+    this.scene.add(this.ambientLight);
   }
 }
