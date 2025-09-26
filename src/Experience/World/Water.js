@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import Experience from "../Experience.js";
-import waterVertex from "../../Shaders/water/waterVertex.glsl";
-import waterFragment from "../../Shaders/water/waterFragment.glsl";
+import waterVertex from "../../Shaders/water/csmWaterVertex.glsl";
+import waterFragment from "../../Shaders/water/csmWaterFragment.glsl";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 
 export default class Water {
   constructor() {
@@ -33,11 +34,11 @@ export default class Water {
   }
 
   setSurface() {
-    this.surfaceGeo = new THREE.PlaneGeometry(10, 10, 128, 128);
-    this.surfaceMat = new THREE.ShaderMaterial({
+    this.surfaceGeo = new THREE.PlaneGeometry(10, 10, 256, 256);
+    this.surfaceMat = new CustomShaderMaterial({
+      baseMaterial: THREE.MeshPhysicalMaterial,
       vertexShader: waterVertex,
       fragmentShader: waterFragment,
-      wireframe: true,
       uniforms: {
         uTime: { value: 0 },
         uSwitch1IsON: { value: false },
@@ -45,9 +46,15 @@ export default class Water {
         uTimeAtLastClick1: { value: this.timeAtLastClick1 },
         uTimeAtLastClick2: { value: this.timeAtLastClick2 },
       },
+
+      // material
+      color: "#1ca3ec",
+      roughness: 0.0,
+      transmission: 0.5,
+      thickness: 2,
     });
     this.surfaceModel = new THREE.Mesh(this.surfaceGeo, this.surfaceMat);
-    this.surfaceModel.rotateX(-Math.PI / 2);
+    this.surfaceModel.geometry.rotateX(-Math.PI / 2);
 
     this.scene.add(this.surfaceModel);
   }

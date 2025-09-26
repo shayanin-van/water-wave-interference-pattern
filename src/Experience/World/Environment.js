@@ -8,7 +8,8 @@ export default class Environment {
     this.resources = this.experience.resources;
 
     this.setEnvironmentMap();
-    this.setAmbient();
+    this.setAmbientLight();
+    this.setDirectionalLight();
   }
 
   setEnvironmentMap() {
@@ -18,13 +19,11 @@ export default class Environment {
     this.environmentMap.texture.colorSpace = THREE.SRGBColorSpace;
 
     this.scene.environment = this.environmentMap.texture;
+    this.scene.background = new THREE.Color("white");
 
     this.environmentMap.updateMaterials = () => {
       this.scene.traverse((child) => {
-        if (
-          child instanceof THREE.Mesh &&
-          child.material instanceof THREE.MeshStandardMaterial
-        ) {
+        if (child instanceof THREE.Mesh) {
           child.material.envMap = this.environmentMap.texture;
           child.material.envMapIntensity = this.environmentMap.intensity;
           child.material.needsUpdate = true;
@@ -34,8 +33,18 @@ export default class Environment {
     this.environmentMap.updateMaterials();
   }
 
-  setAmbient() {
-    this.ambientLight = new THREE.AmbientLight(0xffffff, 1.6);
+  setAmbientLight() {
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
     this.scene.add(this.ambientLight);
+  }
+
+  setDirectionalLight() {
+    this.directionalLight = new THREE.DirectionalLight("#ffffff", 3);
+    this.directionalLight.castShadow = true;
+    this.directionalLight.shadow.mapSize.set(1024, 1024);
+    this.directionalLight.shadow.camera.far = 15;
+    this.directionalLight.shadow.normalBias = 0.05;
+    this.directionalLight.position.set(0.25, 2, 2.25);
+    this.scene.add(this.directionalLight);
   }
 }
