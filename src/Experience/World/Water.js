@@ -36,7 +36,7 @@ export default class Water {
   setSurface() {
     this.surfaceGeo = new THREE.PlaneGeometry(10, 10, 256, 256);
     this.surfaceMat = new CustomShaderMaterial({
-      baseMaterial: THREE.MeshPhysicalMaterial,
+      baseMaterial: THREE.MeshStandardMaterial,
       vertexShader: waterVertex,
       fragmentShader: waterFragment,
       uniforms: {
@@ -50,8 +50,8 @@ export default class Water {
       // material
       color: "#1ca3ec",
       roughness: 0.0,
-      transmission: 0.5,
-      thickness: 2,
+      // transmission: 0.5,
+      // thickness: 2,
     });
     this.surfaceModel = new THREE.Mesh(this.surfaceGeo, this.surfaceMat);
     this.surfaceModel.geometry.rotateX(-Math.PI / 2);
